@@ -337,7 +337,7 @@
       };
       delim = url.indexOf('?') >= 0 ? '&' : '?';
       $.getScript(url + delim + "callback=" + callback).fail(function () {
-        console.error('laeflet-weather-layer: check jsonp format');
+        console.error('leaflet-weather-layer: check jsonp format');
       });
     }
   };
