@@ -331,7 +331,7 @@
         _this = this;
       el = document.createElement('script');
       counter = (this.callbackCounter += 1);
-      callback = "OsmJs.Weather.LeafletLayer.Utils.callbacks[" + counter + "]";
+      callback = "L.Weather.Layer.Utils.callbacks[" + counter + "]";
       abort = function () {
         if (el.parentNode) {
           return el.parentNode.removeChild(el);
@@ -351,14 +351,11 @@
     }
   };
 
-  if (!this.OsmJs) {
-    this.OsmJs = {};
+
+  if (!L.Weather) {
+    L.Weather = {};
   }
 
-  if (!this.OsmJs.Weather) {
-    this.OsmJs.Weather = {};
-  }
-
-  this.OsmJs.Weather.LeafletLayer = Layer;
+  L.Weather.Layer = Layer;
 
 }).call(this);
