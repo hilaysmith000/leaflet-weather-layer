@@ -1,1 +1,1 @@
-# lealfet-weather-layer
+# leaflet-weather-layer
