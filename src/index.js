@@ -103,13 +103,13 @@
         options: {
           position: 'bottomleft'
         },
-        onAdd: function() {
+        onAdd: function () {
           container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-color-help');
           var div = L.DomUtil.create('div', 'main');
 
           container.appendChild(div);
           var i = 30;
-          while (i >-30) {
+          while (i > -30) {
             var _div = L.DomUtil.create('div', 'color');
             _div.style['backgroundColor'] = self.weatherColor(i);
             _div.setAttribute('title', i + ' °C');
@@ -133,7 +133,6 @@
       for (url in _ref) {
         if (_ref.hasOwnProperty(url)) {
           req = _ref[url];
-          req.abort();
         }
       }
       this.sourceRequests = {};
@@ -327,27 +326,19 @@
     callbacks: {},
     callbackCounter: 0,
     requestJsonp: function (url, cb) {
-      var abort, callback, counter, delim, el,
+      var abort, callback, counter, delim,
         _this = this;
-      el = document.createElement('script');
+
       counter = (this.callbackCounter += 1);
       callback = "L.Weather.Layer.Utils.callbacks[" + counter + "]";
-      abort = function () {
-        if (el.parentNode) {
-          return el.parentNode.removeChild(el);
-        }
-      };
       this.callbacks[counter] = function (data) {
         delete _this.callbacks[counter];
         return cb(data);
       };
       delim = url.indexOf('?') >= 0 ? '&' : '?';
-      el.src = "" + url + delim + "callback=" + callback;
-      el.type = 'text/javascript';
-      document.getElementsByTagName('body')[0].appendChild(el);
-      return {
-        abort: abort
-      };
+      $.getScript(url + delim + "callback=" + callback).fail(function () {
+        console.error('laeflet-weather-layer: check jsonp format');
+      });
     }
   };
 
