@@ -197,11 +197,11 @@
         icon: markerIcon
       });
 
-      this.setPopup(marker, weatherText, st);
+      this.setPopup(marker, weatherText, weatherIcon, st);
 
       return marker;
     },
-    setPopup: function (marker, weatherText, st) {
+    setPopup: function (marker, weatherText, weatherIcon, st) {
       if (!this.popup) {
         return;
       }
