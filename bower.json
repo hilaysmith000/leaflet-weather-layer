@@ -1,0 +1,19 @@
+{
+  "name": "leaflet-weather-layer",
+  "version": "0.0.0",
+  "homepage": "https://github.com/owm-inc/lealfet-weather-layer",
+  "authors": [
+    "Oleg Dovger <oleg.a.dovger@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "leaflet": "~0.7.3"
+  }
+}
