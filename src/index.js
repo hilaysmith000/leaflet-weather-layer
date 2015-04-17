@@ -28,8 +28,17 @@
   });
 
   Layer = L.Class.extend({
-    defaultI18n: {
-      en: {
+    colorHelpControl: null,
+    includes: L.Mixin.Events,
+    options: {
+      lang: 'en',
+      clusterWidth: 150,
+      clusterHeight: 150,
+      type: 'city',
+      temperatureDigits: 2,
+      popup: false,
+      popupHTML: null,
+      translation: {
         currentTemperature: "Temperature",
         maximumTemperature: "Max. temp",
         minimumTemperature: "Min. temp",
@@ -42,39 +51,20 @@
         icerain: "Ice rain",
         rime: "Rime",
         rime_possible: "Rime",
-        clear: "Clear"
-      },
-      ru: {
-        currentTemperature: "Температура",
-        maximumTemperature: "Макс. темп",
-        minimumTemperature: "Мин. темп",
-        humidity: "Влажность",
-        wind: "Ветер",
-        show: "Снег",
-        snow_possible: "Возможен снег",
-        rain: "Дождь",
-        rain_possible: "Возможен дождь",
-        icerain: "Ледяной дождь",
-        rime: "Гололед",
-        rime_possible: "Возможен гололед",
-        clear: "Ясно"
+        clear: "Clear",
+        wind_ms: "m/s"
       }
     },
-    colorHelpControl: null,
-    includes: L.Mixin.Events,
     initialize: function (options) {
-      this.options = options != null ? options : {};
+      $.extend(this.options, options);
       this.layer = new L.LayerGroup();
-      this.sourceUrl = "http://api.openweathermap.org/data/2.5/box/{type}?APPID=06aac0fd4ba239a20d824ef89602f311&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
+      this.sourceUrl = "http://api.openweathermap.org/data/2.5/box/{type}?APPID=06aac0fd4ba239a20d824ef89602f311&lang={lang}&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
       this.sourceRequests = {};
-      this.clusterWidth = this.options.clusterWidth || 150;
-      this.clusterHeight = this.options.clusterHeight || 150;
-      this.type = this.options.type || 'city';
-      this.i18n = this.options.i18n || this.defaultI18n[this.options.lang || 'en'];
+      this.clusterWidth = this.options.clusterWidth;
+      this.clusterHeight = this.options.clusterHeight;
+      this.type = this.options.type;
+      this.i18n = this.options.translation;
       this.temperatureDigits = this.options.temperatureDigits;
-      if (this.temperatureDigits == null) {
-        this.temperatureDigits = 2;
-      }
       this.popup = (this.options.popup === true);
     },
     onAdd: function (map) {
@@ -144,7 +134,13 @@
       bounds = this.map.getBounds();
       sw = bounds.getSouthWest();
       ne = bounds.getNorthEast();
-      url = this.sourceUrl.replace('{type}', type).replace('{minlat}', sw.lat).replace('{maxlat}', ne.lat).replace('{minlon}', sw.lng).replace('{maxlon}', ne.lng);
+      url = this.sourceUrl
+        .replace('{type}', type)
+        .replace('{minlat}', sw.lat)
+        .replace('{maxlat}', ne.lat)
+        .replace('{minlon}', sw.lng)
+        .replace('{maxlon}', ne.lng)
+        .replace('{lang}', _this.options.lang);
       return this.sourceRequests[type] = Layer.Utils.requestJsonp(url, function (data) {
         var cells, key, ll, p, st, _i, _len, _ref;
         delete _this.sourceRequests[type];
@@ -207,23 +203,44 @@
       }
 
       var popupContent;
-      popupContent = "<div class=\"weather-place\">";
-      popupContent += "<img height=\"38\" width=\"45\" style=\"border: none; float: right;\" alt=\"" + weatherText + "\" src=\"" + weatherIcon + "\" />";
-      popupContent += "<h3>" + st.name + "</h3>";
-      popupContent += "<p>" + weatherText + "</p>";
-      popupContent += "<p>";
-      popupContent += "" + this.i18n.currentTemperature + ":&nbsp;" + (this.toCelc(st.main.temp)) + "&nbsp;°C<br />";
-      if (st.temp_max) {
-        popupContent += "" + this.i18n.maximumTemperature + ":&nbsp;" + (this.toCelc(st.main.temp_max)) + "&nbsp;°C<br />";
-      }
-      if (st.temp_min) {
-        popupContent += "" + this.i18n.minimumTemperature + ":&nbsp;" + (this.toCelc(st.main.temp_min)) + "&nbsp;°C<br />";
-      }
-      popupContent += "" + this.i18n.humidity + ":&nbsp;" + st.main.humidity + "<br />";
-      popupContent += "" + this.i18n.wind + ":&nbsp;" + st.wind.speed + "&nbsp;m/s<br />";
-      popupContent += "</p>";
-      popupContent += "</div>";
 
+      if (this.options.popupHTML instanceof Function) {
+        popupContent = this.options.popupHTML.call(null, st);
+      } else if (this.options.popupHTML instanceof String) {
+        popupContent = this.options.popupHTML;
+      } else {
+        popupContent = "<div class=\"weather-place\">";
+        popupContent += "<img height=\"38\" width=\"45\" style=\"border: none; float: right;\" alt=\"{weatherText}\" src=\"{weatherIcon}\" />";
+        popupContent += "<h3>{name}</h3>";
+        popupContent += "<p>{weatherText}</p>";
+        popupContent += "<p>";
+        popupContent += "{currentTemperature}:&nbsp;{temp}&nbsp;°C<br />";
+        if (st.main.temp_max) {
+          popupContent += "{maximumTemperature}:&nbsp;{temp_max}&nbsp;°C<br />";
+        }
+        if (st.main.temp_min) {
+          popupContent += "{minimumTemperature}:&nbsp;{temp_min}&nbsp;°C<br />";
+        }
+        popupContent += "{humidity}:&nbsp;{humidity_val}%<br />";
+        popupContent += "{wind}:&nbsp;{wind_val}&nbsp;{m_s}<br />";
+        popupContent += "</p>";
+        popupContent += "</div>";
+      }
+
+      popupContent = popupContent.replace('{name}', st.name)
+        .replace('{weatherIcon}', weatherIcon)
+        .replace(/{weatherText}/g, weatherText)
+        .replace('{currentTemperature}', this.i18n.currentTemperature)
+        .replace('{temp}', st.main.temp.toFixed(1))
+        .replace('{maximumTemperature}', this.i18n.maximumTemperature)
+        .replace('{temp_max}', st.main.temp_max.toFixed(1))
+        .replace('{minimumTemperature}', this.i18n.minimumTemperature)
+        .replace('{temp_min}', st.main.temp_min.toFixed(1))
+        .replace('{humidity}', this.i18n.humidity)
+        .replace('{humidity_val}', st.main.humidity)
+        .replace('{wind}', this.i18n.wind)
+        .replace('{wind_val}', st.wind.speed)
+        .replace('{m_s}', this.i18n.wind_ms);
       marker.bindPopup(popupContent);
     },
     weatherColor: function (t, opacity) {
@@ -278,28 +295,15 @@
       }
     },
     weatherText: function (st) {
-      if (st.prsp_type === '1') {
-        if (st.prcp !== 0 && st.prcp > 0) {
-          return "" + this.i18n.snow + "&nbsp;(" + st.prcp + "&nbsp;mm)";
-        } else {
-          return this.i18n.snow_possible;
+      var i18n = this.i18n;
+      if (st.weather[0]) {
+        var rslt = i18n['c' + st.weather[0].id];
+        if (!rslt) {
+          rslt = i18n.clear;
         }
-      } else if (st.prsp_type === '2') {
-        if (st.prcp !== 0 && st.prcp > 0) {
-          return "" + this.i18n.rime + "&nbsp;(" + st.prcp + "&nbsp;mm)";
-        } else {
-          return this.i18n.rime_possible;
-        }
-      } else if (st.prsp_type === '3') {
-        return this.i18n.icerain;
-      } else if (st.prsp_type === '4') {
-        if (st.prcp !== 0 && st.prcp > 0) {
-          return "" + this.i18n.rain + "&nbsp;(" + st.prcp + "&nbsp;mm)";
-        } else {
-          return this.i18n.rain_possible;
-        }
+        return rslt;
       } else {
-        return this.i18n.clear;
+        return i18n.clear;
       }
     },
     dayTime: function (st) {
