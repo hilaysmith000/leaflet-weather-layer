@@ -86,7 +86,9 @@
       }
       this.map.off('moveend', this.update, this);
       this.map.removeLayer(this.layer);
-      this.map.removeControl(this.colorHelpControl);
+      if(this.colorHelpControl) {
+        this.map.removeControl(this.colorHelpControl);
+      }
       this.fireEvent('removed');
       return this.map = void 0;
     },
