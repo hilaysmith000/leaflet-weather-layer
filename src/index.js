@@ -32,6 +32,7 @@
     includes: L.Mixin.Events,
     options: {
       lang: 'en',
+      legend: false,
       clusterWidth: 150,
       clusterHeight: 150,
       type: 'city',
@@ -72,7 +73,9 @@
       this.map.addLayer(this.layer);
       this.map.on('moveend', this.update, this);
 
-      this.addColorHelpControl();
+      if(this.options.legend) {
+        this.addColorHelpControl();
+      }
 
       this.update();
       this.fireEvent('added');
@@ -144,6 +147,9 @@
       return this.sourceRequests[type] = Layer.Utils.requestJsonp(url, function (data) {
         var cells, key, ll, p, st, _i, _len, _ref;
         delete _this.sourceRequests[type];
+        if(!_this.map) {
+          return;
+        }
         _this.map.removeLayer(_this.layer);
         _this.layer.clearLayers();
         cells = {};
