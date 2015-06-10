@@ -192,7 +192,7 @@
       }) : new Icon({
         image: weatherIcon,
         text: "" + temp + "&nbsp;°C",
-        textOffset: 35
+        textOffset: 30
       });
       markerIcon.options.tempColor1 = this.weatherColor(temp, 0.5);
       markerIcon.options.tempColor2 = this.weatherColor(temp);
