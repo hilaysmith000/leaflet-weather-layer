@@ -142,6 +142,7 @@
       url = this.sourceUrl
         .replace('{type}', type)
         .replace('{minlat}', sw.lat)
+        .replace('{APPID}', sw.appid)
         .replace('{maxlat}', ne.lat)
         .replace('{minlon}', sw.lng)
         .replace('{maxlon}', ne.lng)
