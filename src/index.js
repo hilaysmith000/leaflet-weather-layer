@@ -147,9 +147,9 @@
         .replace('{minlon}', sw.lng)
         .replace('{maxlon}', ne.lng)
         .replace('{lang}', _this.options.lang);
-      return this.sourceRequests[type] = Layer.Utils.requestJsonp(url, function (data) {
+      return this.sourceRequests[this.type] = Layer.Utils.requestJsonp(url, function (data) {
         var cells, key, ll, p, st, _i, _len, _ref;
-        delete _this.sourceRequests[type];
+        delete _this.sourceRequests[this.type];
         if(!_this.map) {
           return;
         }
@@ -339,7 +339,7 @@
     callbacks: {},
     callbackCounter: 0,
     requestJsonp: function (url, cb) {
-      var abort, callback, counter, delim,
+      var callback, counter, delim,
         _this = this;
 
       counter = (this.callbackCounter += 1);
