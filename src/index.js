@@ -59,7 +59,7 @@
     initialize: function (options) {
       $.extend(this.options, options);
       this.layer = new L.LayerGroup();
-      this.sourceUrl = "http://api.openweathermap.org/data/2.5/box/{type}?APPID=06aac0fd4ba239a20d824ef89602f311&lang={lang}&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
+      this.sourceUrl = "http://api.openweathermap.org/data/2.5/box/{type}?APPID={APPID}&lang={lang}&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
       this.sourceRequests = {};
       this.clusterWidth = this.options.clusterWidth;
       this.clusterHeight = this.options.clusterHeight;
@@ -131,18 +131,18 @@
         }
       }
       this.sourceRequests = {};
-      this.updateType(this.type);
+      this.updateType();
     },
-    updateType: function (type) {
+    updateType: function () {
       var bounds, ne, sw, url,
         _this = this;
       bounds = this.map.getBounds();
       sw = bounds.getSouthWest();
       ne = bounds.getNorthEast();
       url = this.sourceUrl
-        .replace('{type}', type)
+        .replace('{type}', this.type)
         .replace('{minlat}', sw.lat)
-        .replace('{APPID}', sw.appid)
+        .replace('{APPID}', this.options.appId)
         .replace('{maxlat}', ne.lat)
         .replace('{minlon}', sw.lng)
         .replace('{maxlon}', ne.lng)
@@ -360,6 +360,7 @@
     L.Weather = {};
   }
 
+  L.Weather.Icon = Icon;
   L.Weather.Layer = Layer;
 
 }).call(this);
