@@ -59,7 +59,7 @@
     initialize: function (options) {
       $.extend(this.options, options);
       this.layer = new L.LayerGroup();
-      this.sourceUrl = "http://api.openweathermap.org/data/2.5/box/{type}?APPID={APPID}&lang={lang}&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
+      this.sourceUrl = "//api.openweathermap.org/data/2.5/box/{type}?APPID={APPID}&lang={lang}&cnt=300&format=json&units=metric&bbox={minlon},{minlat},{maxlon},{maxlat},10";
       this.sourceRequests = {};
       this.clusterWidth = this.options.clusterWidth;
       this.clusterHeight = this.options.clusterHeight;
@@ -120,7 +120,7 @@
       this.fireEvent('helpColorAdded', {container: container});
     },
     getAttribution: function () {
-      return 'Weather data provided by <a href="http://openweathermap.org/">OpenWeatherMap</a>.';
+      return 'Weather data provided by <a href="//openweathermap.org/">OpenWeatherMap</a>.';
     },
     update: function () {
       var req, url, _ref;
@@ -183,7 +183,7 @@
       var marker, markerIcon, typeIcon, weatherIcon, weatherText;
       weatherText = this.weatherText(st);
       //weatherIcon = this.weatherIcon(st);
-      weatherIcon = 'http://openweathermap.org/img/w/{icon}.png'.replace('{icon}', st.weather[0].icon);
+      weatherIcon = '//openweathermap.org/img/w/{icon}.png'.replace('{icon}', st.weather[0].icon);
       typeIcon = this.typeIcon(st);
       var temp = st.main.temp.toFixed(1);
       markerIcon = typeIcon ? new Icon({
@@ -292,14 +292,14 @@
           img = '09';
         }
       }
-      return "http://openweathermap.org/images/icons60/" + img + ".png";
+      return "//openweathermap.org/images/icons60/" + img + ".png";
     },
     typeIcon: function (st) {
       if (st.datatype === 'station') {
         if (st.type === '1') {
-          return "http://openweathermap.org/images/list-icon-3.png";
+          return "//openweathermap.org/images/list-icon-3.png";
         } else if (st.type === '2') {
-          return "http://openweathermap.org/images/list-icon-2.png";
+          return "//openweathermap.org/images/list-icon-2.png";
         }
       }
     },
